@@ -3680,8 +3680,9 @@ int LuaUnsyncedCtrl::SetBuildFacing(lua_State* L)
 
 /*** @function Spring.SendLuaUIMsg
  * @param message string
- * @param mode string "s"/"specs" | "a"/"allies"
+ * @param mode string "s"/"specs" | "a"/"allies" | int x \in [0,255]; 
  * @return nil
+ * 
  */
 int LuaUnsyncedCtrl::SendLuaUIMsg(lua_State* L)
 {
@@ -3690,13 +3691,34 @@ int LuaUnsyncedCtrl::SendLuaUIMsg(lua_State* L)
 
 	const char* mode = luaL_optstring(L, 2, "");
 
-	if (mode[0] != 0 && mode[0] != 'a' && mode[0] != 's')
-		luaL_error(L, "Unknown SendLuaUIMsg() mode");
+	int recipientID = -1;
+	// magic numbering need to fix
+	if (lua_israwstring(L, 2)) {
+		const char* mode = lua_tostring(L, 2);
+		// values from ChatMessage.h
+		switch (mode[0]) {
+			case '\0': recipientID = 254; break;  // everyone
+			case 'a': recipientID = 252; break;	  // allies 
+			case 's': recipientID = 253; break;	  // spectators
+		default: luaL_error(L, "Invalid SendLuaUIMsg received"); //  
+		}
 
-	try {
-		clientNet->Send(CBaseNetProtocol::Get().SendLuaMsg(gu->myPlayerNum, LUA_HANDLE_ORDER_UI, mode[0], data));
-	} catch (const netcode::PackPacketException& ex) {
-		luaL_error(L, "SendLuaUIMsg() packet error: %s", ex.what());
+	} else if (lua_israwnumber(L, 2)) {
+		recipientID = lua_tonumber(L, 2); // expecting 0-251
+		if (recipientID < 0 || recipientID > MAX_PLAYERS) {
+			luaL_error(L, "Invalid player ID sent");
+		}
+	} 
+
+	if (recipientID != -1) { // ensure valid recipientID
+		try {
+			clientNet->Send(CBaseNetProtocol::Get().SendLuaMsg(gu->myPlayerNum, LUA_HANDLE_ORDER_UI, recipientID, data));
+		}
+		catch (const netcode::PackPacketException& ex) {
+			luaL_error(L, "SendLuaUIMsg() packet error: %s", ex.what());
+		}
+	} else {
+		luaL_error(L, "Invalid SendLuaUIMsg received");
 	}
 
 	return 0;

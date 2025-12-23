@@ -1007,7 +1007,7 @@ void CGame::ClientReadNet()
 					std::uint16_t packetSize;
 					std::uint8_t playerNum;
 					std::uint16_t script;
-					std::uint8_t mode;
+					std::uint8_t recipientID;
 					std::vector<std::uint8_t> data;
 
 					unpack >> packetSize;
@@ -1018,13 +1018,13 @@ void CGame::ClientReadNet()
 					if (!playerHandler.IsValidPlayer(playerNum))
 						throw netcode::UnpackPacketException("invalid player number");
 
-					data.resize(packetSize - (1 + sizeof(packetSize) + sizeof(playerNum) + sizeof(script) + sizeof(mode)));
+					data.resize(packetSize - (1 + sizeof(packetSize) + sizeof(playerNum) + sizeof(script) + sizeof(recipientID)));
 
 					unpack >> script;
-					unpack >> mode;
+					unpack >> recipientID;
 					unpack >> data;
 
-					CLuaHandle::HandleLuaMsg(playerNum, script, mode, data);
+					CLuaHandle::HandleLuaMsg(playerNum, script, recipientID, data);
 					AddTraffic(playerNum, packetCode, dataLength);
 				} catch (const netcode::UnpackPacketException& ex) {
 					LOG_L(L_ERROR, "[Game::%s][NETMSG_LUAMSG] exception \"%s\"", __func__, ex.what());
