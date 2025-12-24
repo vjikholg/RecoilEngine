@@ -2431,11 +2431,11 @@ void CLuaHandle::HandleLuaMsg(int playerID, int script, int mode, const std::vec
 			if (luaUI != nullptr) {
 				bool sendMsg = false;
 
-				int& id = mode; 
-				switch (id) {
-					case 254: { sendMsg = true; } break;				// everyone
-					case 253: { sendMsg = gu->spectating; } break;		// spectators
-					case 252: {											// allies
+				int& recipientID = mode; 
+				switch (recipientID) {
+					case RECIPIENT_TYPES::everyone: { sendMsg = true; } break;				// everyone
+					case RECIPIENT_TYPES::spectators: { sendMsg = gu->spectating; } break;  // spectators
+					case RECIPIENT_TYPES::allies: {											// allies
 						const CPlayer* player = playerHandler.Player(playerID);
 						if (player == nullptr)
 							return;
@@ -2447,8 +2447,8 @@ void CLuaHandle::HandleLuaMsg(int playerID, int script, int mode, const std::vec
 							const int msgAllyTeam = teamHandler.AllyTeam(player->team);
 							sendMsg = teamHandler.Ally(msgAllyTeam, gu->myAllyTeam);
 						}
-					} default: {										 // specific player, drops if not matching
-						if (luaUI != nullptr && id == gu->myPlayerNum) {
+					} default: {		// specific player, flag for drop if not matching
+						if (recipientID == gu->myPlayerNum) {
 							sendMsg = true;
 						}
 					} break; 

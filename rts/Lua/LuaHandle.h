@@ -28,6 +28,12 @@
 
 #define MAX_LUA_COB_ARGS 10
 
+enum RECIPIENT_TYPES {
+	allies = 252,
+	spectators = 253,
+	everyone = 254
+};
+
 class CUnit;
 class CWeapon;
 class CFeature;
@@ -47,6 +53,7 @@ class CLuaRules;
 class CLuaUI;
 struct WeaponDef;
 class CCobDeferredCallin;
+
 
 
 class CLuaHandle : public CEventClient
