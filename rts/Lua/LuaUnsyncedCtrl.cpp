@@ -3697,10 +3697,10 @@ int LuaUnsyncedCtrl::SendLuaUIMsg(lua_State* L)
 		const char* mode = lua_tostring(L, 2);
 		// values from ChatMessage.h
 		switch (mode[0]) {
-			case '\0': recipientID = 254; break;  // everyone
-			case 'a': recipientID = 252; break;	  // allies 
-			case 's': recipientID = 253; break;	  // spectators
-		default: luaL_error(L, "Invalid SendLuaUIMsg received"); //  
+			case 'a': recipientID  = RECIPIENT_TYPES::allies; break;	  // allies 
+			case 's': recipientID  = RECIPIENT_TYPES::spectators; break;	  // spectators	
+			case '\0': recipientID = RECIPIENT_TYPES::everyone; break;  // everyone
+			default: luaL_error(L, "Invalid SendLuaUIMsg received"); //  
 		}
 
 	} else if (lua_israwnumber(L, 2)) {
