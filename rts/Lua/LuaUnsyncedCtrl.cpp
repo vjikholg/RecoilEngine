@@ -3692,14 +3692,13 @@ int LuaUnsyncedCtrl::SendLuaUIMsg(lua_State* L)
 	const char* mode = luaL_optstring(L, 2, "");
 
 	int recipientID = -1;
-	// magic numbering need to fix
 	if (lua_israwstring(L, 2)) {
 		const char* mode = lua_tostring(L, 2);
 		// values from ChatMessage.h
 		switch (mode[0]) {
-			case 'a': recipientID  = RECIPIENT_TYPES::allies; break;	  // allies 
-			case 's': recipientID  = RECIPIENT_TYPES::spectators; break;	  // spectators	
-			case '\0': recipientID = RECIPIENT_TYPES::everyone; break;  // everyone
+			case 'a': recipientID  = ChatMessage::TO_ALLIES; break;	  // allies 
+			case 's': recipientID  = ChatMessage::TO_SPECTATORS; break;	  // spectators	
+			case '\0': recipientID = ChatMessage::TO_EVERYONE; break;  // everyone
 			default: luaL_error(L, "Invalid SendLuaUIMsg received"); //  
 		}
 

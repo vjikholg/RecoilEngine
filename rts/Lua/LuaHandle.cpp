@@ -20,6 +20,7 @@
 #include "Game/Game.h"
 #include "Game/GameHelper.h"
 #include "Game/Action.h"
+#include "Game/ChatMessage.h"
 #include "Game/GlobalUnsynced.h"
 #include "Game/Players/Player.h"
 #include "Game/Players/PlayerHandler.h"
@@ -2433,22 +2434,25 @@ void CLuaHandle::HandleLuaMsg(int playerID, int script, int mode, const std::vec
 
 				int& recipientID = mode; 
 				switch (recipientID) {
-					case RECIPIENT_TYPES::everyone: { sendMsg = true; } break;				// everyone
-					case RECIPIENT_TYPES::spectators: { sendMsg = gu->spectating; } break;  // spectators
-					case RECIPIENT_TYPES::allies: {											// allies
+					case ChatMessage::TO_EVERYONE: { sendMsg = true; } break;				// everyone
+					case ChatMessage::TO_SPECTATORS: { sendMsg = gu->spectating; } break;   // spectators
+					case ChatMessage::TO_ALLIES: {											// allies
 						const CPlayer* player = playerHandler.Player(playerID);
 						if (player == nullptr)
 							return;
 						if (gu->spectatingFullView) {
 							sendMsg = true;
-						} else if (player->spectator) {
+						}
+						else if (player->spectator) {
 							sendMsg = gu->spectating;
-						} else {
+						}
+						else {
 							const int msgAllyTeam = teamHandler.AllyTeam(player->team);
 							sendMsg = teamHandler.Ally(msgAllyTeam, gu->myAllyTeam);
 						}
-					} default: {										 // specific player, drops if not matching
-						if (luaUI != nullptr && id == gu->myPlayerNum) {
+					} break; 
+					default: {										 // specific player, drops if not matching
+						if (recipientID == gu->myPlayerNum) {
 							sendMsg = true;
 						}
 					} break; 
