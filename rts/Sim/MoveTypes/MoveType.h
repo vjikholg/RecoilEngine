@@ -77,9 +77,13 @@ public:
 	// The distance the unit will move before stopping,
 	// starting from given speed and applying maximum
 	// brake rate.
-	virtual float BrakingDistance(float speed, float rate) const {
-		const float time = speed / std::max(rate, 0.001f);
-		const float dist = 0.5f * rate * time * time;
+	
+	// using COB angular units + COB/frames for unit rotation 
+	// speed = cau/f -> 65535 units per circle 
+	// rate = cau/(fs) 
+	virtual float BrakingDistance(float speed, float rate) const {		// need to see typical angular acceleration value passed to rate 
+		const float time = speed / std::max(rate, 0.001f);				// v = a*t -> t = v/a 
+		const float dist = 0.5f * rate * time * time;					// 
 		return dist;
 	}
 
