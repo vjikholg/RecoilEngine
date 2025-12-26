@@ -6939,9 +6939,9 @@ void CLuaHandle::HandleLuaMsg(int playerID, int script, int mode, const std::vec
 
 				int& recipientID = mode; 
 				switch (recipientID) {
-					case RECIPIENT_TYPES::everyone: { sendMsg = true; } break;				// everyone
-					case RECIPIENT_TYPES::spectators: { sendMsg = gu->spectating; } break;  // spectators
-					case RECIPIENT_TYPES::allies: {											// allies
+					case ChatMessage::TO_ALLIES: { sendMsg = true; } break;				   // everyone
+					case ChatMessage::TO_SPECTATORS: { sendMsg = gu->spectating; } break;  // spectators
+					case ChatMessage::TO_EVERYONE: {									   // allies
 						const CPlayer* player = playerHandler.Player(playerID);
 						if (player == nullptr)
 							return;
