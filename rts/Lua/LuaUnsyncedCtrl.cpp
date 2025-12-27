@@ -3692,33 +3692,28 @@ int LuaUnsyncedCtrl::SendLuaUIMsg(lua_State* L)
 	const char* mode = luaL_optstring(L, 2, "");
 
 	int recipientID = -1;
+	int scriptID = -1;
 	// magic numbering need to fix
 	if (lua_israwstring(L, 2)) {
 		const char* mode = lua_tostring(L, 2);
-		// values from ChatMessage.h
-		switch (mode[0]) {
-			case 'a': recipientID  = ChatMessage::TO_ALLIES; break;	  // allies 
-			case 's': recipientID  = ChatMessage::TO_SPECTATORS; break;	  // spectators	
-			case '\0': recipientID = ChatMessage::TO_EVERYONE; break;  // everyone
-			default: luaL_error(L, "Invalid SendLuaUIMsg received"); //  
+		if (mode[0] != 'a' && mode[0] != 's' && mode[0] != '\0') {
+			luaL_error(L, "Invalid SendLuaUIMsg received");
 		}
+		scriptID = LUA_HANDLE_ORDER_UI;
 
 	} else if (lua_israwnumber(L, 2)) {
-		recipientID = lua_tonumber(L, 2); // expecting 0-251
+		recipientID = lua_tonumber(L, 2); 
 		if (recipientID < 0 || recipientID > MAX_PLAYERS) {
 			luaL_error(L, "Invalid player ID sent");
 		}
-	} 
+		scriptID = LUA_HANDLE_ORDER_UI_SINGLE;
+	}
 
-	if (recipientID != -1) { // ensure valid recipientID
-		try {
-			clientNet->Send(CBaseNetProtocol::Get().SendLuaMsg(gu->myPlayerNum, LUA_HANDLE_ORDER_UI, recipientID, data));
-		}
-		catch (const netcode::PackPacketException& ex) {
-			luaL_error(L, "SendLuaUIMsg() packet error: %s", ex.what());
-		}
-	} else {
-		luaL_error(L, "Invalid SendLuaUIMsg received");
+	try {
+		clientNet->Send(CBaseNetProtocol::Get().SendLuaMsg(gu->myPlayerNum, scriptID, (recipientID == -1) ? mode[0] : recipientID , data));
+	}
+	catch (const netcode::PackPacketException& ex) {
+		luaL_error(L, "SendLuaUIMsg() packet error: %s", ex.what());
 	}
 
 	return 0;

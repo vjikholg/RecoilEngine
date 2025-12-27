@@ -2428,15 +2428,22 @@ void CLuaHandle::HandleLuaMsg(int playerID, int script, int mode, const std::vec
 	std::copy(data.begin(), data.end(), msg.begin());
 
 	switch (script) {
+		case LUA_HANDLE_ORDER_UI_SINGLE: {
+			bool sendMsg = false;
+			if (luaUI != nullptr) {
+				int& recipientID = mode; // interpret as mode! 
+				if (recipientID == gu->myPlayerNum) {
+					luaUI->RecvLuaMsg(msg, playerID);
+				}
+			}
+		} break;
 		case LUA_HANDLE_ORDER_UI: {
 			if (luaUI != nullptr) {
 				bool sendMsg = false;
-
-				int& recipientID = mode; 
-				switch (recipientID) {
-					case ChatMessage::TO_EVERYONE: { sendMsg = true; } break;				// everyone
-					case ChatMessage::TO_SPECTATORS: { sendMsg = gu->spectating; } break;  // spectators
-					case ChatMessage::TO_ALLIES: {											// allies
+				switch (mode) {
+					case 0: { sendMsg = true; } break;				 // everyone
+					case 's': { sendMsg = gu->spectating; } break;   // spectators
+					case 'a': {										 // allies
 						const CPlayer* player = playerHandler.Player(playerID);
 						if (player == nullptr)
 							return;
@@ -2450,12 +2457,9 @@ void CLuaHandle::HandleLuaMsg(int playerID, int script, int mode, const std::vec
 							const int msgAllyTeam = teamHandler.AllyTeam(player->team);
 							sendMsg = teamHandler.Ally(msgAllyTeam, gu->myAllyTeam);
 						} break;
-					} default: {		// specific player, flag for drop if not matching
-						if (recipientID == gu->myPlayerNum) {
-							sendMsg = true;
-						}
-					} break; 
+					} 
 				}
+
 				if (sendMsg)
 					luaUI->RecvLuaMsg(msg, playerID);
 			}
