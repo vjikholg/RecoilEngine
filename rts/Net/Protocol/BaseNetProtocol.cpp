@@ -441,9 +441,9 @@ PacketType CBaseNetProtocol::SendLogMsg(uint8_t playerNum, uint8_t logMsgLvl, co
 * @param rawData		Raw byte data to be sent to recipient(s), interpretation behavior up to ScriptID
 * Packs LuaMsgData into PackPacket object, wrapped in a PacketType (shared ptr)
 */
-PacketType CBaseNetProtocol::SendLuaMsg(uint8_t playerNum, uint16_t script, uint8_t recipientID, const std::vector<uint8_t>& rawData)
+PacketType CBaseNetProtocol::SendLuaMsg(uint8_t playerNum, uint16_t script, uint8_t recipientId, const std::vector<uint8_t>& rawData)
 {
-	const uint32_t payloadSize = sizeof(playerNum) + sizeof(script) + sizeof(recipientID) + rawData.size();
+	const uint32_t payloadSize = sizeof(playerNum) + sizeof(script) + sizeof(recipientId) + rawData.size();
 	const uint32_t headerSize = sizeof(uint8_t) + sizeof(uint16_t);
 	const uint32_t packetSize = headerSize + payloadSize;
 
@@ -451,7 +451,7 @@ PacketType CBaseNetProtocol::SendLuaMsg(uint8_t playerNum, uint16_t script, uint
 		throw netcode::PackPacketException("[BaseNetProto::SendLuaMsg] maximum packet-size exceeded");
 
 	PackPacket* packet = new PackPacket(packetSize, NETMSG_LUAMSG);
-	*packet << static_cast<uint16_t>(packetSize) << playerNum << script << recipientID << rawData;
+	*packet << static_cast<uint16_t>(packetSize) << playerNum << script << recipientId << rawData;
 	return PacketType(packet);
 }
 
