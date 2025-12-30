@@ -29,6 +29,12 @@
 
 #define MAX_LUA_COB_ARGS 10
 
+enum LUAMSG_TYPES {
+	EVERYONE = (uint8_t) '\0',
+	ALLIES = (uint8_t) 'a', 
+	SPECTATORS = (uint8_t) 's',
+};
+
 class CUnit;
 class CWeapon;
 class CFeature;
