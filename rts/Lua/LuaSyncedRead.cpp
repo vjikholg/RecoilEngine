@@ -9178,13 +9178,13 @@ int LuaSyncedRead::GetUnitMoveDef(lua_State* L) // expect unitID or unitString
 	MoveDef* moveDef = nullptr;
 
 	if (unit == nullptr) {
-		lua_pushnumber(L, -1);
+		luaL_error(L, "Invalid unitID passed: ", lua_tostring(L, 1));
 		return 1;
 	}
 
 	if (unit->moveDef == nullptr) {
 		// aircraft or structure, not supported
-		lua_pushnumber(L, -1);
+		luaL_error(L, "Aircraft/Structure are not supported: ", lua_tostring(L, 1));
 		return 1;
 	}
 
