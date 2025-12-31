@@ -9167,7 +9167,7 @@ int LuaSyncedRead::GetRadarErrorParams(lua_State* L)
 /***
 * @function Spring.GetUnitMoveDef
 * 
-* @param unitID integer | unitName string
+* @param unitID integer 
 * 
 * @return Table containing name, index from MoveDef from the given unit identifier. 
 */
