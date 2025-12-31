@@ -2428,12 +2428,9 @@ void CLuaHandle::HandleLuaMsg(int playerID, int script, int recipientId, const s
 	std::copy(data.begin(), data.end(), msg.begin());
 
 	switch (script) {
-		case LUA_HANDLE_ORDER_UI_SINGLE: { // expecting 0-251
-			bool sendMsg = false;
-			if (luaUI != nullptr) {
-				if (recipientId == gu->myPlayerNum) {
-					luaUI->RecvLuaMsg(msg, playerID);
-				}
+		case LUA_HANDLE_ORDER_UI_SINGLE: { // expecting 0-251, if invalid int, doesn't register.
+			if (luaUI != nullptr && recipientId == gu->myPlayerNum) {
+				luaUI->RecvLuaMsg(msg, playerID);
 			}
 		} break;
 		case LUA_HANDLE_ORDER_UI: { // expecting '\0', 'a', 's', check luahandle.h for enum 
@@ -2450,14 +2447,12 @@ void CLuaHandle::HandleLuaMsg(int playerID, int script, int recipientId, const s
 
 						if (gu->spectatingFullView) {
 							sendMsg = true;
-						}
-						else if (player->spectator) {
+						} else if (player->spectator) {
 							sendMsg = gu->spectating;
-						}
-						else {
+						} else {
 							const int msgAllyTeam = teamHandler.AllyTeam(player->team);
 							sendMsg = teamHandler.Ally(msgAllyTeam, gu->myAllyTeam);
-						} 
+						}
 					} break;
 				}
 

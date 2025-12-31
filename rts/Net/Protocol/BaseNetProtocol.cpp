@@ -435,10 +435,11 @@ PacketType CBaseNetProtocol::SendLogMsg(uint8_t playerNum, uint8_t logMsgLvl, co
 	return PacketType(packet);
 }
 /* 
-* @param playerNum		ID of player sending the message, 0-251. 
-* @param script			ScriptID as defined in LuaHandle.h, details what "type" of luamsg being sent (and how recipient(s) should handle)
-* @param recipientID	Who the message is intended for (e.g. all players ('\0', specific player (0-251), allies ('a'), spectators ('s'))
-* @param rawData		Raw byte data to be sent to recipient(s), interpretation behavior up to ScriptID
+* @param playerNum     ID of player sending the message, 0-251. 
+* @param script        ScriptID as defined in LuaHandle.h, details what "type" of luamsg being sent (and how recipient(s) should handle)
+* @param recipientID   Who the message is intended for (e.g. all players ('\0', specific player (0-251), allies ('a'), spectators ('s'))
+* @param rawData       Raw byte data to be sent to recipient(s), interpretation behavior up to ScriptID
+*
 * Packs LuaMsgData into PackPacket object, wrapped in a PacketType (shared ptr)
 */
 PacketType CBaseNetProtocol::SendLuaMsg(uint8_t playerNum, uint16_t script, uint8_t recipientId, const std::vector<uint8_t>& rawData)

@@ -29,10 +29,10 @@
 
 #define MAX_LUA_COB_ARGS 10
 
-enum LUAMSG_TYPES {
-	EVERYONE = (uint8_t) '\0',
-	ALLIES = (uint8_t) 'a', 
-	SPECTATORS = (uint8_t) 's',
+enum LUAMSG_TYPES: uint8_t {
+	EVERYONE = '\0',
+	ALLIES = 'a',
+	SPECTATORS = 's'
 };
 
 class CUnit;

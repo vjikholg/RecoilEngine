@@ -3679,8 +3679,8 @@ int LuaUnsyncedCtrl::SetBuildFacing(lua_State* L)
 
 
 /*** @function Spring.SendLuaUIMsg
- * @param message	string Lua Message to be sent. 
- * @param mode		string/number, mode designator/recipient id. expects none (everyone) | "s"/"specs" | "a"/"allies" | playerID (0-255)
+ * @param message   string Lua Message to be sent. 
+ * @param mode      string/number, mode designator/recipient id. expects none (everyone) | "s"/"specs" | "a"/"allies" | playerID (0-255)
  * @return nil
  * 
  */
@@ -3707,7 +3707,7 @@ int LuaUnsyncedCtrl::SendLuaUIMsg(lua_State* L)
 		scriptID = LUA_HANDLE_ORDER_UI_SINGLE;
 
 	} else {
-		luaL_error(L, "SendLuaUIMsg() recipientID must be use raw integer or string: ", luaL_typename(L, 2));
+		luaL_error(L, "SendLuaUIMsg() recipientID must  raw integer or string: ", luaL_typename(L, 2));
 	}
 
 	try {
