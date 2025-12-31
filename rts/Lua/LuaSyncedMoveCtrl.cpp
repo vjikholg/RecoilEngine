@@ -1026,34 +1026,3 @@ int LuaSyncedMoveCtrl::SetMoveDef(lua_State* L)
 	lua_pushboolean(L, (unit->moveDef = moveDef) != nullptr);
 	return 1;
 }
-
-/***
- * @function MoveCtrl.GetMoveDef
- * @param unitID integer
- * @return boolean success `true` if the `MoveDef` was "got", `false` if `unitID` or `moveDef` were invalid, or if the unit does not support a `MoveDef`.
- */
-
-int LuaSyncedMoveCtrl::GetMoveDef(lua_State* L)
-{
-	CUnit* unit = ParseUnit(L, __func__, 1);
-	MoveDef* moveDef = nullptr;
-
-	// basic checks, inherited from SetMoveDef
-	if (unit == nullptr) {
-		lua_pushboolean(L, false);
-		return 1;
-	}
-	if (unit->moveDef == nullptr) {
-		// aircraft or structure, not supported
-		lua_pushboolean(L, false);
-		return 1;
-	}
-		
-	// based values of BAR movedefs.lua
-	moveDef = unit->moveDef; // for each field we need to associate it with a table value; 
-	lua_newtable(L);
-	lua_pushinteger("footprint", moveDef->GetFootPrint(1)); 
-
-
-
-}

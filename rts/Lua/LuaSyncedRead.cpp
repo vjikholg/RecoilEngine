@@ -397,6 +397,7 @@ bool LuaSyncedRead::PushEntries(lua_State* L)
 	REGISTER_LUA_CFUNC(TraceRayGroundBetweenPositions);
 
 	REGISTER_LUA_CFUNC(GetRadarErrorParams);
+	REGISTER_LUA_CFUNC(GetUnitMoveDef);
 
 	if (!LuaMetalMap::PushReadEntries(L))
 		return false;
@@ -9162,6 +9163,40 @@ int LuaSyncedRead::GetRadarErrorParams(lua_State* L)
 	lua_pushnumber(L, losHandler->GetBaseRadarErrorMult());
 	return 3;
 }
+
+/***
+* @function Spring.GetUnitMoveDef
+* 
+* @param unitID integer
+* 
+* @return Index of given unit ID's MoveDef within the moveDefs array.
+*/
+
+int LuaSyncedRead::GetUnitMoveDef(lua_State* L) // expect unitID 
+{
+	const CUnit* unit = ParseUnit(L, __func__, 1); // not mutating only read
+	MoveDef* moveDef = nullptr;
+
+	if (unit == nullptr) {
+		lua_pushnumber(L, -1);
+		return 1;
+	}
+
+	if (unit->moveDef == nullptr) {
+		// aircraft or structure, not supported
+		lua_pushnumber(L, -1);
+		return 1;
+	}
+
+	// MoveType instance must already have been assigned
+	assert(unit->moveType != nullptr);
+
+	const int value = moveDefHandler.GetMoveDefId(unit->moveDef);
+	lua_pushnumber(L, value);
+
+	return 1;
+}
+
 
 
 /******************************************************************************/
