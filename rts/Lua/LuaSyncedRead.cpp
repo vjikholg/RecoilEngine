@@ -397,7 +397,7 @@ bool LuaSyncedRead::PushEntries(lua_State* L)
 	REGISTER_LUA_CFUNC(TraceRayGroundBetweenPositions);
 
 	REGISTER_LUA_CFUNC(GetRadarErrorParams);
-	REGISTER_LUA_CFUNC(GetUnitMoveDef);
+	REGISTER_LUA_CFUNC(GetUnitMoveDefID);
 
 	if (!LuaMetalMap::PushReadEntries(L))
 		return false;
@@ -9169,22 +9169,23 @@ int LuaSyncedRead::GetRadarErrorParams(lua_State* L)
 * 
 * @param unitID integer 
 * 
-* @return Table containing name, index from MoveDef from the given unit identifier. 
+* @return integer MoveDefID relative to MoveDefs list
+* @return string MoveDef->Name
 */
 
-int LuaSyncedRead::GetUnitMoveDef(lua_State* L) // expect unitID or unitString
+int LuaSyncedRead::GetUnitMoveDefID(lua_State* L) // expect unitID or unitString
 {
 	const CUnit* unit = ParseUnit(L, __func__, 1); // not mutating only read
 	MoveDef* moveDef = nullptr;
 
 	if (unit == nullptr) {
-		luaL_error(L, "Invalid unitID passed: ", lua_tostring(L, 1));
+		luaL_error(L, "Invalid unitID for GetUnitMoveDef passed: ", lua_tostring(L, 1));
 		return 1;
 	}
-
+	
 	if (unit->moveDef == nullptr) {
 		// aircraft or structure, not supported
-		luaL_error(L, "Aircraft/Structure are not supported: ", lua_tostring(L, 1));
+		luaL_error(L, "Aircraft/Structure are not supported GetUnitMoveDef: ", lua_tostring(L, 1));
 		return 1;
 	}
 
@@ -9192,16 +9193,11 @@ int LuaSyncedRead::GetUnitMoveDef(lua_State* L) // expect unitID or unitString
 	assert(unit->moveType != nullptr);
 
 	const int value = moveDefHandler.GetMoveDefId(unit->moveDef);
-	lua_newtable(L);
-	lua_pushstring(L, "name"); 
+
+	lua_pushnumber(L, value);
 	lua_pushstring(L, (unit->moveDef->name).c_str());
-	lua_settable(L, -3);
 
-	lua_pushstring(L, "id");
-	lua_pushnumber(L, value); 
-	lua_settable(L, -3); 
-
-	return 1;
+	return 2;
 }
 
 
