@@ -9167,12 +9167,12 @@ int LuaSyncedRead::GetRadarErrorParams(lua_State* L)
 /***
 * @function Spring.GetUnitMoveDef
 * 
-* @param unitID integer
+* @param unitID integer | unitName string
 * 
-* @return Index of given unit ID's MoveDef within the moveDefs array.
+* @return Table containing name, index from MoveDef from the given unit identifier. 
 */
 
-int LuaSyncedRead::GetUnitMoveDef(lua_State* L) // expect unitID 
+int LuaSyncedRead::GetUnitMoveDef(lua_State* L) // expect unitID or unitString
 {
 	const CUnit* unit = ParseUnit(L, __func__, 1); // not mutating only read
 	MoveDef* moveDef = nullptr;
@@ -9192,7 +9192,14 @@ int LuaSyncedRead::GetUnitMoveDef(lua_State* L) // expect unitID
 	assert(unit->moveType != nullptr);
 
 	const int value = moveDefHandler.GetMoveDefId(unit->moveDef);
-	lua_pushnumber(L, value);
+	lua_newtable(L);
+	lua_pushstring(L, "name"); 
+	lua_pushstring(L, (unit->moveDef->name).c_str());
+	lua_settable(L, -3);
+
+	lua_pushstring(L, "id");
+	lua_pushnumber(L, value); 
+	lua_settable(L, -3); 
 
 	return 1;
 }
