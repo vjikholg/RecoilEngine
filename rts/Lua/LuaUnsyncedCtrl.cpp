@@ -3695,23 +3695,24 @@ int LuaUnsyncedCtrl::SendLuaUIMsg(lua_State* L)
 
 	if (lua_israwstring(L, 2) || lua_isnoneornil(L, 2)) { // make none/nil valid, exists usage w/ no 2nd arg
 		if (mode[0] != 'a' && mode[0] != 's' && mode[0] != '\0') {
-			luaL_error(L, "Invalid recipient argument for SendLuaUIMsg received: ", mode[0]);
+			luaL_error(L, "Invalid recipient argument for SendLuaUIMsg received: %s", mode[0]);
 		}
+		recipientID = mode[0];
 		scriptID = LUA_HANDLE_ORDER_UI;
 
 	} else if (lua_israwnumber(L, 2)) {
-		recipientID = luaL_optnumber(L, 2, -1); // if no arg, outputs -1
+		recipientID = lua_tonumber(L, 2);
 		if (recipientID < 0 || recipientID > MAX_PLAYERS) {
-			luaL_error(L, "Invalid player ID sent (expecting between 0-251): ", recipientID);
+			luaL_error(L, "Invalid player ID sent (%d received, expecting between 0-%d): ", recipientID, (int) MAX_PLAYERS);
 		}
 		scriptID = LUA_HANDLE_ORDER_UI_SINGLE;
 
 	} else {
-		luaL_error(L, "SendLuaUIMsg() recipientID must  raw integer or string: ", luaL_typename(L, 2));
+		luaL_error(L, "SendLuaUIMsg() recipientID must raw integer or string: %s", luaL_typename(L, 2));
 	}
 
 	try {
-		clientNet->Send(CBaseNetProtocol::Get().SendLuaMsg(gu->myPlayerNum, scriptID, (recipientID == -1) ? mode[0] : recipientID , data));
+		clientNet->Send(CBaseNetProtocol::Get().SendLuaMsg(gu->myPlayerNum, scriptID, recipientID, data));
 	}
 	catch (const netcode::PackPacketException& ex) {
 		luaL_error(L, "SendLuaUIMsg() packet error: %s", ex.what());

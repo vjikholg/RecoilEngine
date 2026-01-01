@@ -2428,7 +2428,7 @@ void CLuaHandle::HandleLuaMsg(int playerID, int script, int recipientId, const s
 	std::copy(data.begin(), data.end(), msg.begin());
 
 	switch (script) {
-		case LUA_HANDLE_ORDER_UI_SINGLE: { // expecting 0-251, if invalid int, doesn't register.
+		case LUA_HANDLE_ORDER_UI_SINGLE: { // expects a playerID between 0 to MAX_PLAYERS, check globalconstants.h for details
 			if (luaUI != nullptr && recipientId == gu->myPlayerNum) {
 				luaUI->RecvLuaMsg(msg, playerID);
 			}
