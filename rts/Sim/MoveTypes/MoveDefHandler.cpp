@@ -187,17 +187,6 @@ MoveDef* MoveDefHandler::GetMoveDefByName(const std::string& name)
 	return &moveDefs[it->second];
 }
 
-int MoveDefHandler::GetMoveDefId(const MoveDef* def)
-{
-	const auto it = nameMap.find(hashString(def->name)); 
-
-	if (it == nameMap.end()) {
-		return -1;
-	}
-	
-	return it->second;
-}
-
 
 
 MoveDef::MoveDef()
