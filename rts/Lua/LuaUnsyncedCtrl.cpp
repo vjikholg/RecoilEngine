@@ -3689,15 +3689,15 @@ int LuaUnsyncedCtrl::SendLuaUIMsg(lua_State* L)
 	const std::string msg = luaL_checksstring(L, 1);
 	const std::vector<std::uint8_t> data(msg.begin(), msg.end());
 
-	const char* mode = luaL_optstring(L, 2, ""); // if no arg, outputs "" where mode[0] resolves to '\0'
 	int recipientID = -1; 
 	int scriptID = -1;
 
 	if (lua_israwstring(L, 2) || lua_isnoneornil(L, 2)) { // make none/nil valid, exists usage w/ no 2nd arg
+		const char* mode = luaL_optstring(L, 2, ""); // if no arg, outputs "" where mode[0] resolves to '\0'
 		if (mode[0] != 'a' && mode[0] != 's' && mode[0] != '\0') {
 			luaL_error(L, "Invalid recipient argument for SendLuaUIMsg received: %s", mode[0]);
 		}
-		recipientID = mode[0];
+		recipientID = mode[0]; 
 		scriptID = LUA_HANDLE_ORDER_UI;
 
 	} else if (lua_israwnumber(L, 2)) {
