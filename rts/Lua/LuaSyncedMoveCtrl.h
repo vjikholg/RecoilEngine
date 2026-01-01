@@ -62,6 +62,7 @@ class LuaSyncedMoveCtrl {
 		static int SetBaseMoveTypeData(lua_State* L);
 
 		static int SetMoveDef(lua_State* L);
+		static int GetMoveDef(lua_State* L);
 };
 
 

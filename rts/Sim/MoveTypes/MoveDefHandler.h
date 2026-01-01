@@ -40,7 +40,7 @@ struct MoveDef {
 
 	MoveDef& operator = (const MoveDef& moveDef) = delete;
 	MoveDef& operator = (MoveDef&& moveDef) = default;
-
+	
 	// nearestSquare is given a meaningful value only when the result is true.
 	bool DoRawSearch(
 		const CSolidObject* collider,
@@ -227,6 +227,8 @@ public:
 
 	MoveDef* GetMoveDefByPathType(unsigned int pathType) { assert(pathType < mdCounter); return &moveDefs[pathType]; }
 	MoveDef* GetMoveDefByName(const std::string& name);
+
+	int GetMoveDefId(const MoveDef* def);
 
 	unsigned int GetNumMoveDefs() const { return mdCounter; }
 	unsigned int GetCheckSum() const { return mdChecksum; }
