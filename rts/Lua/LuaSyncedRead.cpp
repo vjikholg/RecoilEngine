@@ -203,6 +203,7 @@ bool LuaSyncedRead::PushEntries(lua_State* L)
 
 	REGISTER_LUA_CFUNC(GetUnitTooltip);
 	REGISTER_LUA_CFUNC(GetUnitDefID);
+	REGISTER_LUA_CFUNC(GetUnitMoveDefID);
 	REGISTER_LUA_CFUNC(GetUnitTeam);
 	REGISTER_LUA_CFUNC(GetUnitAllyTeam);
 	REGISTER_LUA_CFUNC(GetUnitNeutral);
@@ -397,7 +398,6 @@ bool LuaSyncedRead::PushEntries(lua_State* L)
 	REGISTER_LUA_CFUNC(TraceRayGroundBetweenPositions);
 
 	REGISTER_LUA_CFUNC(GetRadarErrorParams);
-	REGISTER_LUA_CFUNC(GetUnitMoveDefID);
 
 	if (!LuaMetalMap::PushReadEntries(L))
 		return false;
@@ -4120,6 +4120,41 @@ int LuaSyncedRead::GetUnitDefID(lua_State* L)
 	lua_pushnumber(L, LuaUtils::EffectiveUnitDef(L, unit)->id);
 	return 1;
 }
+
+/***
+* @function Spring.GetUnitMoveDef
+*
+* Returns a numerical movedef ID and its name. For now, ID is not
+* too useful so use the name, but may get deprecated at some point. 
+* 
+* @param unitID integer
+*
+* @return integer? MoveDefID nil for structures, aircraft
+* @return string? MoveDefName 
+*/
+
+int LuaSyncedRead::GetUnitMoveDefID(lua_State* L) 
+{
+	const CUnit* unit = ParseUnit(L, __func__, 1); // not mutating only read
+
+	if (unit == nullptr) {
+		luaL_error(L, "Invalid unitID for GetUnitMoveDef passed: %s", lua_tostring(L, 1));
+	}
+
+	if (unit->moveDef == nullptr) {
+		return 0; // aircraft or structure unsupported, return nil. 
+	}
+
+	// MoveType instance must already have been assigned
+	assert(unit->moveType != nullptr);
+
+	const MoveDef* moveDef = unit->moveDef;
+	lua_pushnumber(L, moveDef->pathType);
+	lua_pushstring(L, (moveDef -> name).c_str());
+
+	return 2;
+}
+
 
 
 /***
@@ -9162,40 +9197,6 @@ int LuaSyncedRead::GetRadarErrorParams(lua_State* L)
 	lua_pushnumber(L, losHandler->GetBaseRadarErrorSize());
 	lua_pushnumber(L, losHandler->GetBaseRadarErrorMult());
 	return 3;
-}
-
-/***
-* @function Spring.GetUnitMoveDef
-* 
-* @param unitID integer 
-* 
-* @return integer MoveDefID relative to MoveDefs list
-* @return string MoveDef->Name
-*/
-
-int LuaSyncedRead::GetUnitMoveDefID(lua_State* L) // expect unitID or unitString
-{
-	const CUnit* unit = ParseUnit(L, __func__, 1); // not mutating only read
-	MoveDef* moveDef = nullptr;
-
-	if (unit == nullptr) {
-		luaL_error(L, "Invalid unitID for GetUnitMoveDef passed: ", lua_tostring(L, 1));
-	}
-	
-	if (unit->moveDef == nullptr) {
-		// aircraft or structure, not supported
-		luaL_error(L, "Aircraft/Structure are not supported GetUnitMoveDef: ", lua_tostring(L, 1));
-	}
-
-	// MoveType instance must already have been assigned
-	assert(unit->moveType != nullptr);
-
-	const int value = moveDefHandler.GetMoveDefId(unit->moveDef);
-
-	lua_pushnumber(L, value);
-	lua_pushstring(L, (unit->moveDef->name).c_str());
-
-	return 2;
 }
 
 
