@@ -4122,7 +4122,7 @@ int LuaSyncedRead::GetUnitDefID(lua_State* L)
 }
 
 /***
-* @function Spring.GetUnitMoveDef
+* @function Spring.GetUnitMoveDefID
 *
 * Returns a numerical movedef ID and its name. For now, ID is not
 * too useful so use the name, but may get deprecated at some point. 
@@ -4130,23 +4130,20 @@ int LuaSyncedRead::GetUnitDefID(lua_State* L)
 * @param unitID integer
 *
 * @return integer? MoveDefID nil for structures, aircraft
-* @return string? MoveDefName 
+* @return string? MoveDefName
 */
 
 int LuaSyncedRead::GetUnitMoveDefID(lua_State* L) 
 {
-	const CUnit* unit = ParseUnit(L, __func__, 1); // not mutating only read
+	const CUnit* unit = ParseInLosUnit(L, __func__, 1); // not mutating only read
 
 	if (unit == nullptr) {
-		luaL_error(L, "Invalid unitID for GetUnitMoveDef passed: %s", lua_tostring(L, 1));
+		luaL_error(L, "Invalid unitID for GetUnitMoveDefID passed: %s", lua_tostring(L, 1));
 	}
 
 	if (unit->moveDef == nullptr) {
 		return 0; // aircraft or structure unsupported, return nil. 
 	}
-
-	// MoveType instance must already have been assigned
-	assert(unit->moveType != nullptr);
 
 	const MoveDef* moveDef = unit->moveDef;
 	lua_pushnumber(L, moveDef->pathType);
