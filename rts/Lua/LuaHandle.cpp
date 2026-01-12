@@ -2785,6 +2785,28 @@ DRAW_CALLIN(DrawGroundPostForward)
  */
 DRAW_CALLIN(DrawGroundPreDeferred)
 
+/* 
+ * DrawGroundDeferred virtual, overwritten by macro expr DRAW_CALLIN(name) -> 	static const LuaHashString cmdStr(#name); RunDrawCallIn(cmdStr);
+ * const LuaHashString cmdStr(#name) -> # stringifies name, then initializes LuaHashString constructor with member init using #name
+ * 
+ *   void CLuaHandle::RunDrawCallIn(const LuaHashString& hs)
+ *  {
+ *  	RECOIL_DETAILED_TRACY_ZONE;			// profiler
+ *  	LUA_CALL_IN_CHECK(L);				// check if callin exists(?)
+ *  	luaL_checkstack(L, 2, __func__);	// grows the stack size to top + sz (2) elements, raising an error if the stack cannot grow to that size.
+ *  	if (!hs.GetGlobalFunc(L))			// check if the top of L stack is a lua function (?), pops stack then returns false if not func (?) 
+ *  		return;
+ *  
+ *  	LuaOpenGL::SetDrawingEnabled(L, true);
+ *  
+ *  	// call the routine
+ *  	RunCallIn(L, hs, 0, 0);
+ *  
+ *  	LuaOpenGL::SetDrawingEnabled(L, false);
+ *   }
+ * 
+*/
+
 /*** @function Callins:DrawGroundDeferred
  *
  */

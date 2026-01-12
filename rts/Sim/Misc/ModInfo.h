@@ -126,6 +126,9 @@ public:
 	/// How much should energy should capture cost, default 0.0
 	float captureEnergyCostFactor;
 
+	// Command Behaviour 
+	/// Whether unit command deduplication should be handled through Engine or Lua.
+	bool luaDeduplicateUnitCommands; 
 
 	float unitExpMultiplier;
 	float unitExpPowerScale;

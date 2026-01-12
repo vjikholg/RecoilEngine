@@ -53,6 +53,7 @@
 	SETUP_EVENT(UnitStunned,    MANAGED_BIT)
 	SETUP_EVENT(UnitExperience, MANAGED_BIT)
 	SETUP_EVENT(UnitHarvestStorageFull, MANAGED_BIT)
+	SETUP_EVENT(AddedDuplicateEvent, MANAGED_BIT) 
 
 	SETUP_EVENT(UnitSeismicPing,  MANAGED_BIT)
 	SETUP_EVENT(UnitEnteredRadar, MANAGED_BIT)

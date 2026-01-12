@@ -9,7 +9,28 @@
 #include "LuaInclude.h"
 #include "System/StringHash.h"
 
-
+/*
+ * https://stackoverflow.com/questions/1711990/what-is-this-weird-colon-member-syntax-in-the-constructor
+ * Foo(int num): bar(num) {} class constructor initializes class Foo using params num, versus 'manual' member assignment 
+ * Called "Class Member Initialization" 
+ * Initialization vs. Assignment is extremely different 
+ * Assignment = Object is initialized first w/ default() (so fields = default), and then reassigned by param, two operations
+ * Initialization = Constructors called then object constructed + initialized in one operation. 
+ * 
+ * Cost of member initialization = Constructor() 
+ * Cost of member assignment = Constructor() + Assignment()
+ * 
+ * Syntax-wise, the following are equivalent: 
+ * Foo(int num) : bar() {bar = num}
+ * Foo(int num) : bar(num){}
+ * 
+ * In the LuaHashString case, the LuaHashString constructor takes ptr to "char[]" s (read const char*) 
+ * Member initialized by setting the hash field = lua_calchash(...)
+ * So in one step, LuaHashString is constructed and the hash member is initialized to the given value. 
+ * This can be useful when you want to set "default-ish" yet dynamic behaviour for objects, without having 
+ * to use additional assignment steps. 
+ * 
+*/
 struct LuaHashString {
 	public:
 		LuaHashString(const char* s): hash(lua_calchash(s, slen = strlen(s))) {

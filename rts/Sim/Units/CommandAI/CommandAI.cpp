@@ -1370,17 +1370,74 @@ int CCommandAI::CancelCommands(const Command& c, CCommandQueue& q, bool& first)
 	int cancelCount = 0;
 
 	while (true) {
-		CCommandQueue::const_iterator cci = GetCancelQueued(c, q);
-		CCommandQueue::iterator ci = q.begin() + (cci - q.begin());
+		CCommandQueue::const_iterator cci = GetCancelQueued(c, q);	// given Command c, find the first found queued command that would be canceled within q
+		CCommandQueue::iterator ci = q.begin() + (cci - q.begin()); // determines that actual position, if first -> q.begin() = arr[0], cci-q.begin() = arr[cci]; 
+		
 
-		if (ci == q.end())
+		if (ci == q.end()) // nothing to cancel, return how many we've canceled so far. 
 			return cancelCount;
 
 		first = first || (ci == q.begin());
 		cancelCount++;
 
 		CCommandQueue::iterator firstErase = ci;
-		CCommandQueue::iterator lastErase = ci;
+		CCommandQueue::iterator lastErase = ci; // so this entire time, ci "points" to the element inside q that is canceled by c. 
+
+		++ci;
+
+		if ((ci != q.end()) && (ci->GetID() == CMD_WAIT)) {
+			waitCommandsAI.RemoveWaitCommand(owner, *ci);
+			lastErase = ci;
+			cancelCount++;
+			++ci;
+		}
+
+		++lastErase; // STL: erase the range [first, last)
+		q.erase(firstErase, lastErase);
+
+		if (c.GetID() >= 0)
+			return cancelCount; // only delete one non-build order
+	}	
+
+	return cancelCount;
+}
+
+// one thing of note - want to recreate same functionality in Lua. 
+// Question is then what we need to provide Lua-side to be able to recreate exact functionality
+// I think one thing we can do is set default behavior through our call in
+// Provide the tools to recreate default behaviour in Lua
+// Then provide a method to perhaps return a new unit queue from Lua + cancelCount, which allows for custom behavior.
+
+int CCommandAI::CancelCommandsTest(const Command& c, CCommandQueue& q, bool& first)
+{
+	RECOIL_DETAILED_TRACY_ZONE;
+	first = false;
+	int cancelCount = 0;
+
+	while (true) {
+		CCommandQueue::const_iterator cci = GetCancelQueued(c, q);	// given Command c, find the first found queued command that would be canceled within q
+		CCommandQueue::iterator ci = q.begin() + (cci - q.begin()); // determines that actual position, if first -> q.begin() = arr[0], cci-q.begin() = arr[cci];
+		// we'll need to insert cancel here, tag non-cancelled events to avoid infinite loop
+		/*
+		* if (luaDeduplicateUnitCommands) 
+		*	emit Spring.UnitCommandEvent(x,y,z);
+		*	auto x = Spring.UnitCommandEvent(x,y,z)
+		*	if (x = true) do not deduplicate, tag cancelable as "skip" 
+		*	if (x = false) continue as is
+		*	there is the problem that this could be very costly, i.e., basically runs every time a command is inputted into queue
+		*	can we dynamically determine what dev might want to do with this info, hardcode that behavior instead? 
+		* 
+		*/
+
+
+		if (ci == q.end()) // nothing to cancel, return how many we've canceled so far. 
+			return cancelCount;
+
+		first = first || (ci == q.begin());
+		cancelCount++;
+
+		CCommandQueue::iterator firstErase = ci;
+		CCommandQueue::iterator lastErase = ci; // so this entire time, ci "points" to the element inside q that is canceled by c. 
 
 		++ci;
 

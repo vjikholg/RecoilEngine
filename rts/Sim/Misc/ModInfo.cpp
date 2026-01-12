@@ -68,6 +68,9 @@ void CModInfo::ResetState()
 		insertBuiltUnitMoveCommand = true;
 	}
 	{
+		luaDeduplicateUnitCommands = false;
+	}
+	{
 		debrisDamage = 50.0f;
 	}
 	{
@@ -255,7 +258,10 @@ void CModInfo::Init(const std::string& modFileName)
 		constructionDecaySpeed = constructionTbl.GetFloat("constructionDecaySpeed", constructionDecaySpeed);
 		insertBuiltUnitMoveCommand = constructionTbl.GetBool("insertBuiltUnitMoveCommand", insertBuiltUnitMoveCommand);
 	}
-
+	{
+		const LuaTable& deduplicateCommandTbl = root.SubTable("something here..."); // this should throw but needs further discussion towards how we want this modrule defined
+		luaDeduplicateUnitCommands = deduplicateCommandTbl.GetBool("something here...", luaDeduplicateUnitCommands); // see above comment
+	}	
 	{
 		const LuaTable& damageTbl = root.SubTable("damage");
 

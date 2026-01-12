@@ -148,6 +148,7 @@ class CEventClient
 		virtual void UnitStunned(const CUnit* unit, bool stunned) {}
 		virtual void UnitExperience(const CUnit* unit, float oldExperience) {}
 		virtual void UnitHarvestStorageFull(const CUnit* unit) {}
+		virtual void AddedDuplicateCommand(int unitID) {}
 
 		virtual void UnitSeismicPing(const CUnit* unit, int allyTeam,
 		                             const float3& pos, float strength) {}

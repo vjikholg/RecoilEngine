@@ -69,6 +69,7 @@ public:
 	bool HasMoreMoveCommands(bool skipFirstCmd = true) const;
 
 	int CancelCommands(const Command& c, CCommandQueue& queue, bool& first);
+	int CancelCommandsTest(const Command& c, CCommandQueue& q, bool& first);
 	/**
 	 * @brief Finds the queued command that would be canceled by the Command c
 	 * @return An iterator pointing at the command, or commandQue.end(),
